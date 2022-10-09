@@ -1,45 +1,42 @@
 package za.co.suneshan.interview.span.league;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//@SpringBootTest(args="--score.sheet=sample1.txt")
-@TestConfiguration
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = League.class,
+		webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class LeagueApplicationTests {
+
+	@Autowired
+	private League league;
+
+	private final PrintStream standardOut = System.out;
+	private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+	@BeforeEach
+	public void setUp() {
+		System.setOut(new PrintStream(outputStreamCaptor));
+	}
 
 	@Test
 	void contextLoads() {
-		System.out.println("print 11");
-//		InputStream sysInBackup = System.in; // backup System.in to restore it later
-//		ByteArrayInputStream in = new ByteArrayInputStream("My string".getBytes());
-//		System.setIn(in);
-
-		System.out.println("print 22");
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("output/out_1.txt").getFile());
+		league.processResults("input/in_1.txt");
+		ByteArrayOutputStream outSpy = new ByteArrayOutputStream();
+		assertEquals(contentOf(file), outputStreamCaptor.toString().trim());
 	}
 
-//	@Test
-//	void whenAppStarts_thenScoreSheetFilenameIsNotEmpty(@Autowired Environment env) {
-//		String filename = env.getProperty("score.sheet");
-//		Assertions.assertTrue(!filename.isEmpty());
-//
-//		System.out.println("print 1");
-//
-//		InputStream sysInBackup = System.in; // backup System.in to restore it later
-//		ByteArrayInputStream in = new ByteArrayInputStream("My string".getBytes());
-//		System.setIn(in);
-//
-//		System.out.println("print 2");
-//	}
 }

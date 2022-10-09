@@ -2,6 +2,7 @@ package za.co.suneshan.interview.span.league;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -13,25 +14,13 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 @Component
-public class LeagueRunner implements ApplicationRunner {
+public class League {
 
     private static final char SPACE = ' ';
     private static final String COMMA = ",";
     private static Map<String, Integer> league = new HashMap<>();
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        String filename;
-        if (args.containsOption("score.sheet")) {
-            filename = args.getOptionValues("score.sheet").get(0);
-        } else {
-            System.out.print("Please enter input filename: ");
-            Scanner scanner = new Scanner(System.in);
-            filename = scanner.nextLine();
-        }
-    }
-
-    private void processLeagueResults(String filename) {
+    public void processResults(String filename) {
         try (Stream<String> stream = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(filename))).lines()) {
             stream.forEach(match -> {
                 String[] team = match.split(COMMA);

@@ -1,5 +1,6 @@
 package za.co.suneshan.interview.span.league;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,19 +25,31 @@ public class LeagueApplicationTests {
 	private League league;
 
 	private final PrintStream standardOut = System.out;
-	private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+	private ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();;
 
 	@BeforeEach
-	public void setUp() {
-		System.setOut(new PrintStream(outputStreamCaptor));
+	public void setUp() throws IOException {
+		System.setOut(new PrintStream(outputStreamCaptor, true));
+	}
+
+	@AfterEach
+	public void tearDown() {
+		System.setOut(standardOut);
 	}
 
 	@Test
-	void contextLoads() {
+	void testLeagueResults() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource("output/out_1.txt").getFile());
-		league.processResults("input/in_1.txt");
-		ByteArrayOutputStream outSpy = new ByteArrayOutputStream();
+		File file = new File(classLoader.getResource("output/league_table.txt").getFile());
+		league.processResults("input/league_results.txt");
+		assertEquals(contentOf(file), outputStreamCaptor.toString().trim());
+	}
+
+	@Test
+	void testEqualRankOrderedAlphabetically() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("output/equal_rank_table.txt").getFile());
+		league.processResults("input/equal_rank.txt");
 		assertEquals(contentOf(file), outputStreamCaptor.toString().trim());
 	}
 

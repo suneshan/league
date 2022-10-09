@@ -1,0 +1,5 @@
+Lions 3, Blades 3
+Tarantulas 1, Apples 1
+Lions 0, Apples 1
+Tarantulas 0, Blades 4
+Lions 0, Grouches 1
